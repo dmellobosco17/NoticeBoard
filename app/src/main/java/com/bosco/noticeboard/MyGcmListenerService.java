@@ -28,6 +28,11 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class MyGcmListenerService extends GcmListenerService {
 
     private static final String TAG = "MyGcmListenerService";
@@ -42,11 +47,28 @@ public class MyGcmListenerService extends GcmListenerService {
     // [START receive_message]
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        String message = data.getString("message");
-        Log.d(TAG, "From: " + from);
-        Log.d(TAG, "Subject: " + data.getString("subject"));
-        Log.d(TAG, "Content: " + data.getString("content"));
-        Log.d(TAG, "Priority: " + data.getString("priority"));
+        String id = data.getString("id");
+        String subject = data.getString("subject");
+        String content = data.getString("content");
+        String priority = data.getString("priority");
+        String channel = data.getString("channel");
+        String DOE = data.getString("DOE");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Date date=null;
+
+        Log.d(TAG,"ID : "+id);
+        Log.d(TAG,"Subject : "+subject);
+        Log.d(TAG,"Content : "+content);
+        Log.d(TAG,"Priority : "+priority);
+        Log.d(TAG,"Channel : "+channel);
+        Log.d(TAG,"DOE : "+DOE);
+
+        try {
+            date = df.parse(DOE);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Notice note = new Notice(Integer.parseInt(id),subject,content,Integer.parseInt(channel),Integer.parseInt(priority),date);
 
         if (from.startsWith("/topics/")) {
             // message received from some topic.
@@ -54,6 +76,7 @@ public class MyGcmListenerService extends GcmListenerService {
             // normal downstream message.
         }
 
+        //TODO save message in database
         // [START_EXCLUDE]
         /**
          * Production applications would usually process the message here.
@@ -66,7 +89,7 @@ public class MyGcmListenerService extends GcmListenerService {
          * In some cases it may be useful to show a notification indicating to the user
          * that a message was received.
          */
-        sendNotification(message);
+        sendNotification(note);
         // [END_EXCLUDE]
     }
     // [END receive_message]
@@ -74,19 +97,20 @@ public class MyGcmListenerService extends GcmListenerService {
     /**
      * Create and show a simple notification containing the received GCM message.
      *
-     * @param message GCM message received.
+     * @param note Notice received from server.
      */
-    private void sendNotification(String message) {
+    private void sendNotification(Notice note) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
+        //TODO use different icon for different priorities
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_ic_notification)
-                .setContentTitle("GCM Message")
-                .setContentText(message)
+                .setContentTitle(note.subject)
+                .setContentText(note.content)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);

@@ -66,7 +66,6 @@ public class NetworkHandler extends Thread{
 		try {
 			this.join();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Log.d("SERVER RESPONSE", result);
@@ -100,7 +99,6 @@ public class NetworkHandler extends Thread{
 			
 			reader.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		finally{

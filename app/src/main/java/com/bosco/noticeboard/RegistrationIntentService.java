@@ -65,6 +65,7 @@ public class RegistrationIntentService extends IntentService {
         this.intent = intent;
         String result="";
 
+        Log.d(TAG,""+sharedPreferences.getBoolean(NoticeBoardPreferences.SENT_TOKEN_TO_SERVER, false));
         //Return if already have token
         if(sharedPreferences.getBoolean(NoticeBoardPreferences.SENT_TOKEN_TO_SERVER, false)){
             Log.d(TAG, "Device is already registered.");
@@ -85,7 +86,6 @@ public class RegistrationIntentService extends IntentService {
             // [END get_token]
             Log.i(TAG, "GCM Registration Token: " + token);
 
-            // TODO: Implement this method to send any registration to your app's servers.
             result = sendRegistrationToServer(token);
 
             // Subscribe to topic channels
@@ -95,7 +95,8 @@ public class RegistrationIntentService extends IntentService {
             // sent to your server. If the boolean is false, send the token to your server,
             // otherwise your server should have already received the token.
             JSONHandler json = new JSONHandler(result);
-            if(json.getString("result") == "success"){
+            Log.d(TAG,"JSON : result => "+json.getString("result"));
+            if(json.getString("result").equals("success")){
                 sharedPreferences.edit().putBoolean(NoticeBoardPreferences.SENT_TOKEN_TO_SERVER, true).apply();
                 sharedPreferences.edit().putString(NoticeBoardPreferences.GCM_TOKEN, token).apply();
             }else {
