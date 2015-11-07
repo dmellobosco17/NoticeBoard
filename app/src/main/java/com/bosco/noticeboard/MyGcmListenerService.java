@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Google Inc. All Rights Reserved.
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,6 +20,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -53,22 +55,18 @@ public class MyGcmListenerService extends GcmListenerService {
         String priority = data.getString("priority");
         String channel = data.getString("channel");
         String DOE = data.getString("DOE");
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        Date date=null;
 
-        Log.d(TAG,"ID : "+id);
-        Log.d(TAG,"Subject : "+subject);
-        Log.d(TAG,"Content : "+content);
-        Log.d(TAG,"Priority : "+priority);
-        Log.d(TAG,"Channel : "+channel);
-        Log.d(TAG,"DOE : "+DOE);
+        Log.d(TAG, "ID : " + id);
+        Log.d(TAG, "Subject : " + subject);
+        Log.d(TAG, "Content : " + content);
+        Log.d(TAG, "Priority : " + priority);
+        Log.d(TAG, "Channel : " + channel);
+        Log.d(TAG, "DOE : " + DOE);
 
-        try {
-            date = df.parse(DOE);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Notice note = new Notice(Integer.parseInt(id),subject,content,Integer.parseInt(channel),Integer.parseInt(priority),date);
+        Notice note = new Notice(Integer.parseInt(id), subject, content, Integer.parseInt(channel), Integer.parseInt(priority), DOE);
+
+        DBHelper db = new DBHelper(this);
+        db.insertNotice(note);
 
         if (from.startsWith("/topics/")) {
             // message received from some topic.
@@ -105,15 +103,21 @@ public class MyGcmListenerService extends GcmListenerService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
-        //TODO use different icon for different priorities
-        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_stat_ic_notification)
                 .setContentTitle(note.subject)
+                .setSmallIcon(R.drawable.normal_bell)
                 .setContentText(note.content)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
+
+        if (note.priority == 1) {
+            notificationBuilder.setColor(getResources().getColor(R.color.icon_normal));
+        } else if (note.priority == 2) {
+            notificationBuilder.setColor(getResources().getColor(R.color.icon_important));
+        }
+
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

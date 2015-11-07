@@ -85,14 +85,14 @@ public class MainActivity extends AppCompatActivity
         }
 
         List<Notice> notices = new ArrayList<Notice>();
-        notices.add(new Notice(1, "Subject 1", "Content 1", 1, 1, new Date()));
-        notices.add(new Notice(1, "Subject 2", "Content 2", 1, 1, new Date()));
-        notices.add(new Notice(1, "Subject 3", "Content 3", 1, 1, new Date()));
-        notices.add(new Notice(1, "Subject 4", "Content 4", 1, 1, new Date()));
-        notices.add(new Notice(1, "Subject 1", "Content 1", 1, 1, new Date()));
-        notices.add(new Notice(1, "Subject 2", "Content 2", 1, 1, new Date()));
-        notices.add(new Notice(1, "Subject 3", "Content 3", 1, 1, new Date()));
-        notices.add(new Notice(1, "Subject 4", "Content 4", 1, 1, new Date()));
+        notices.add(new Notice(1, "Subject 1", "Content 1", 1, 1, ""));
+        notices.add(new Notice(1, "Subject 2", "Content 2", 1, 1, ""));
+        notices.add(new Notice(1, "Subject 3", "Content 3", 1, 1, ""));
+        notices.add(new Notice(1, "Subject 4", "Content 4", 1, 1, ""));
+        notices.add(new Notice(1, "Subject 1", "Content 1", 1, 1, ""));
+        notices.add(new Notice(1, "Subject 2", "Content 2", 1, 1, ""));
+        notices.add(new Notice(1, "Subject 3", "Content 3", 1, 1, ""));
+        notices.add(new Notice(1, "Subject 4", "Content 4", 1, 1, ""));
 
         NoticeAdapter NA = new NoticeAdapter(notices);
         RecyclerView RV = (RecyclerView) findViewById(R.id.notice_list);

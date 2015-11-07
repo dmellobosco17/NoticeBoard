@@ -8,7 +8,7 @@ import java.util.Date;
 public class Notice {
     String subject, content;
     int id, channel, priority;
-    Date DOE;
+    String DOE;
 
     //TODO should add channels dynamically from server
     private int channelImages[] = {
@@ -16,7 +16,11 @@ public class Notice {
     };
     int channelImage;
 
-    Notice(int id, String subject, String content, int channel, int priority, Date DOE) {
+    Notice(){
+
+    }
+
+    Notice(int id, String subject, String content, int channel, int priority, String DOE) {
         this.id = id;
         this.subject = subject;
         this.content = content;
