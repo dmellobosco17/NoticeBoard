@@ -34,6 +34,8 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.NoticeView
         holder.content.setText(notices.get(i).content);
         holder.channelPhoto.setImageResource(notices.get(i).channelImage);
 
+        if(notices.get(i).priority == 2)
+            holder.cv.setCardBackgroundColor(holder.cv.getResources().getColor(R.color.icon_important));
     }
 
     @Override

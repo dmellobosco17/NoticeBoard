@@ -22,7 +22,7 @@ public class JSONHandler {
         try {
             jsonObject = new JSONObject(jsonString);
         }catch (JSONException e){
-            Log.d(TAG, e.getMessage());
+            Log.d(TAG+" Exception1", json);
         }
     }
 
@@ -31,7 +31,7 @@ public class JSONHandler {
         try {
             obj = jsonObject.getJSONObject(key);
         } catch (JSONException e) {
-            Log.d(TAG,e.getMessage());
+            Log.d(TAG+" Exception2",e.getMessage());
         }
 
         return obj;
@@ -42,9 +42,29 @@ public class JSONHandler {
         try {
             result = jsonObject.getString(key);
         } catch (JSONException e) {
-            Log.d(TAG,e.getMessage());
+            Log.d(TAG+" Exception3",e.getMessage());
         }
         return result;
+    }
+
+    public Notice getNotice(){
+        Notice n = null;
+        try {
+            n = new Notice(
+                    Integer.parseInt(jsonObject.getString("id")),
+                    jsonObject.getString("subject"),
+                    jsonObject.getString("content"),
+                    Integer.parseInt(jsonObject.getString("priority")),
+                    Integer.parseInt(jsonObject.getString("channel")),
+                    jsonObject.getString("expiry")
+            );
+
+        } catch (JSONException e) {
+            Log.d(TAG+" Exception4",e.getMessage());
+        }
+
+        Log.d(TAG,n.toString());
+        return n;
     }
 
     public JSONArray getArray(String key){
@@ -52,7 +72,7 @@ public class JSONHandler {
         try {
             result = jsonObject.getJSONArray(key);
         } catch (JSONException e) {
-            Log.d(TAG,e.getMessage());
+            Log.d(TAG+" Exception5",e.getMessage());
         }
         return result;
     }

@@ -20,8 +20,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,11 +27,6 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class MyGcmListenerService extends GcmListenerService {
 
@@ -68,6 +61,8 @@ public class MyGcmListenerService extends GcmListenerService {
         DBHelper db = new DBHelper(this);
         db.insertNotice(note);
 
+        //TODO update UI when GCM arrives
+        //MainActivity.NA.notifyDataSetChanged();
         if (from.startsWith("/topics/")) {
             // message received from some topic.
         } else {

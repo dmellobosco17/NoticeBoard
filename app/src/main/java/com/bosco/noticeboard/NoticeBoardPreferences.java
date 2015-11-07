@@ -20,6 +20,7 @@ public class NoticeBoardPreferences {
     //Server URLs
     public static final String HOST = "http://192.168.0.100";
     public static final String URL_REGISTER_TOKEN = HOST+"/NoticeBoard/main/index.php?opt=register_token";
+    public static final String URL_SYNC_DB = HOST+"/NoticeBoard/main/index.php?opt=sync_db";
 
     //API keys
     public static final String KEY_AUTH = "9004264999";

@@ -1,7 +1,5 @@
 package com.bosco.noticeboard;
 
-import java.util.Date;
-
 /**
  * Created by Bosco on 11/6/2015.
  */
@@ -12,13 +10,10 @@ public class Notice {
 
     //TODO should add channels dynamically from server
     private int channelImages[] = {
+            R.drawable.church_photo,
             R.drawable.church_photo
     };
     int channelImage;
-
-    Notice(){
-
-    }
 
     Notice(int id, String subject, String content, int channel, int priority, String DOE) {
         this.id = id;
@@ -31,4 +26,15 @@ public class Notice {
         channelImage = channelImages[channel-1];
     }
 
+    public String toString(){
+        String str = "-----Notice----";
+        str += "\nID : "+id;
+        str += "\nSubject : "+subject;
+        str += "\nContent : "+content;
+        str += "\npriority : "+priority;
+        str += "\nchannel : "+channel;
+        str += "\nDOE : "+DOE;
+
+        return str;
+    }
 }

@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -31,22 +30,9 @@ import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.net.ssl.HttpsURLConnection;
 
 public class RegistrationIntentService extends IntentService {
 
@@ -128,8 +114,12 @@ public class RegistrationIntentService extends IntentService {
     private String sendRegistrationToServer(String token) {
         // get device IMEI number
         TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        String IMEI = mngr.getDeviceId();
-
+        String IMEI = "UNKNOWN";
+        try {
+            IMEI = mngr.getDeviceId();
+        }catch(Exception e){
+            Log.d(TAG,"Unable to get IMEI");
+        }
 
         String url = NoticeBoardPreferences.URL_REGISTER_TOKEN;
         Map<String,String> payload = new HashMap<String,String>();
