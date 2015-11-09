@@ -31,11 +31,15 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.NoticeView
     @Override
     public void onBindViewHolder(NoticeViewHolder holder, int i) {
         holder.subject.setText(notices.get(i).subject);
-        holder.content.setText(notices.get(i).content);
+        holder.channel.setText(notices.get(i).channelName);
         holder.channelPhoto.setImageResource(notices.get(i).channelImage);
 
-        if(notices.get(i).priority == 2)
+        if (notices.get(i).priority == 2)
             holder.cv.setCardBackgroundColor(holder.cv.getResources().getColor(R.color.icon_important));
+
+        //We are also setting entire Notice object to each card
+        //We can access this object in onNoticeSelect() Method
+        holder.cv.setTag(notices.get(i));
     }
 
     @Override
@@ -46,14 +50,14 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.NoticeView
     public static class NoticeViewHolder extends RecyclerView.ViewHolder {
         CardView cv;
         TextView subject;
-        TextView content;
+        TextView channel;
         ImageView channelPhoto;
 
         NoticeViewHolder(View itemView) {
             super(itemView);
             cv = (CardView) itemView.findViewById(R.id.cv);
             subject = (TextView) itemView.findViewById(R.id.subject);
-            content = (TextView) itemView.findViewById(R.id.content);
+            channel = (TextView) itemView.findViewById(R.id.channel);
             channelPhoto = (ImageView) itemView.findViewById(R.id.church_photo);
         }
     }

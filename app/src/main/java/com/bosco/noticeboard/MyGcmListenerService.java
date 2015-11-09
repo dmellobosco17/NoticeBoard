@@ -47,19 +47,21 @@ public class MyGcmListenerService extends GcmListenerService {
         String content = data.getString("content");
         String priority = data.getString("priority");
         String channel = data.getString("channel");
+        String channelName = data.getString("channel_name");
         String DOE = data.getString("DOE");
 
         Log.d(TAG, "ID : " + id);
         Log.d(TAG, "Subject : " + subject);
         Log.d(TAG, "Content : " + content);
         Log.d(TAG, "Priority : " + priority);
-        Log.d(TAG, "Channel : " + channel);
+        Log.d(TAG, "Channel : " + channel + channelName);
         Log.d(TAG, "DOE : " + DOE);
 
-        Notice note = new Notice(Integer.parseInt(id), subject, content, Integer.parseInt(channel), Integer.parseInt(priority), DOE);
+        Notice note = new Notice(Integer.parseInt(id), subject, content, Integer.parseInt(channel), channelName, Integer.parseInt(priority), DOE);
 
         DBHelper db = new DBHelper(this);
         db.insertNotice(note);
+        db.close();
 
         //TODO update UI when GCM arrives
         //MainActivity.NA.notifyDataSetChanged();
@@ -69,7 +71,6 @@ public class MyGcmListenerService extends GcmListenerService {
             // normal downstream message.
         }
 
-        //TODO save message in database
         // [START_EXCLUDE]
         /**
          * Production applications would usually process the message here.

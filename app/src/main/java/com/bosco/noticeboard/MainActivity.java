@@ -1,5 +1,6 @@
 package com.bosco.noticeboard;
 
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,18 +33,20 @@ public class MainActivity extends AppCompatActivity
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
-    static NoticeAdapter NA;
+    NoticeAdapter NA;
+    RecyclerView RV;
     private View thisView;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
+    DBHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        //TODO Add refresh functionality
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        db = new DBHelper(this);
 
         //TODO add menu items
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -80,25 +83,17 @@ public class MainActivity extends AppCompatActivity
             Log.d(TAG, "Register");
         }
 
-        DBHelper db = new DBHelper(this);
         List<Notice> notices = new ArrayList<Notice>();
         notices = db.getAllNotices();
 
         NA = new NoticeAdapter(notices);
-        RecyclerView RV = (RecyclerView) findViewById(R.id.notice_list);
+        RV = (RecyclerView) findViewById(R.id.notice_list);
         LinearLayoutManager llm = new LinearLayoutManager(this.getBaseContext());
         RV.setLayoutManager(llm);
 
         RV.setAdapter(NA);
-        NA.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                Intent i =new Intent(MainActivity.this,MainActivity.class);
-                startActivity(i);
-            }
-        });
         RV.setVisibility(View.VISIBLE);
+
     }
 
     @Override
@@ -126,12 +121,22 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //TODO handle action buttons
-        switch(id){
-            case R.id.action_refresh :
+        switch (id) {
+            case R.id.action_refresh:
+                //TODO add spinner while refreshing
                 SyncDatabase sync = new SyncDatabase(this);
                 sync.start();
+                try {
+                    sync.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                NA = new NoticeAdapter(sync.notices);
+                RV.setAdapter(NA);
+                RV.refreshDrawableState();
                 break;
-            case R.id.action_settings :
+            case R.id.action_settings:
+                //TODO add settings
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -142,7 +147,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
+        //TODO subscribe channels
         if (id == R.id.nav_camara) {
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
@@ -175,6 +180,7 @@ public class MainActivity extends AppCompatActivity
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         super.onPause();
         Log.d(TAG, "Pause");
+        db.close();
     }
 
     private boolean checkPlayServices() {
@@ -191,5 +197,16 @@ public class MainActivity extends AppCompatActivity
             return false;
         }
         return true;
+    }
+
+    //TODO enable transition effect
+    public void onNoticeSelect(View view) {
+        //Retrieve notice object
+        Notice note = (Notice) view.getTag();
+
+        Log.d(TAG, "Selected notice : " + note.toString());
+        Intent i = new Intent(this, NoticeActivity.class);
+        i.putExtra("Notice", note);
+        startActivity(i);
     }
 }

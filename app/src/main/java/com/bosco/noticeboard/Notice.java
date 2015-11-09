@@ -1,12 +1,14 @@
 package com.bosco.noticeboard;
 
+import java.io.Serializable;
+
 /**
  * Created by Bosco on 11/6/2015.
  */
-public class Notice {
+public class Notice implements Serializable {
     String subject, content;
     int id, channel, priority;
-    String DOE;
+    String DOE, channelName;
 
     //TODO should add channels dynamically from server
     private int channelImages[] = {
@@ -15,26 +17,28 @@ public class Notice {
     };
     int channelImage;
 
-    Notice(int id, String subject, String content, int channel, int priority, String DOE) {
+    Notice(int id, String subject, String content, int channel, String channelName, int priority, String DOE) {
         this.id = id;
         this.subject = subject;
         this.content = content;
         this.channel = channel;
+        this.channelName = channelName;
         this.priority = priority;
         this.DOE = DOE;
 
-        channelImage = channelImages[channel-1];
+        channelImage = channelImages[channel - 1];
     }
 
-    public String toString(){
+    public String toString() {
         String str = "-----Notice----";
-        str += "\nID : "+id;
-        str += "\nSubject : "+subject;
-        str += "\nContent : "+content;
-        str += "\npriority : "+priority;
-        str += "\nchannel : "+channel;
-        str += "\nDOE : "+DOE;
+        str += "\nID : " + id;
+        str += "\nSubject : " + subject;
+        str += "\nContent : " + content;
+        str += "\npriority : " + priority;
+        str += "\nchannel : " + channel;
+        str += "\nDOE : " + DOE;
 
         return str;
     }
+
 }

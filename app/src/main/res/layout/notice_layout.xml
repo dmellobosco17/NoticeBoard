@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/cv"
+        android:onClick="onNoticeSelect"
         cardView:cardElevation="1dp"
         cardView:cardUseCompatPadding="true"
         >
@@ -40,7 +41,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/content"
+                android:id="@+id/channel"
                 android:layout_toRightOf="@+id/church_photo"
                 android:layout_below="@+id/subject"
                 />

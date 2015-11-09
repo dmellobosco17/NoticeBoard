@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,23 +19,24 @@ public class SyncDatabase extends Thread {
 
     private final String TAG = "SyncDatabase";
     private Context context;
+    public List<Notice> notices;
 
-    SyncDatabase(Context c){
+    SyncDatabase(Context c) {
         context = c;
     }
 
-    public void run(){
-        Map<String,String> payload = new HashMap<String,String>();
-        payload.put("channels","[1]");
+    public void run() {
+        Map<String, String> payload = new HashMap<String, String>();
+        payload.put("channels", "[1,2]");
         String url = NoticeBoardPreferences.URL_SYNC_DB;
 
-        NetworkHandler nh = new NetworkHandler(payload,url);
+        NetworkHandler nh = new NetworkHandler(payload, url);
         String result = nh.callServer();
         Log.d(TAG, result);
 
         JSONHandler json = new JSONHandler(result);
 
-        List<Notice> notices = new ArrayList<Notice>();
+        notices = new ArrayList<Notice>();
         JSONArray notes = json.getArray("notices");
 
         for (int i = 0; i < notes.length(); i++) {
@@ -45,10 +47,12 @@ public class SyncDatabase extends Thread {
             }
         }
         DBHelper db = new DBHelper(context);
-        db.onUpgrade(db.getWritableDatabase(),1,1);
+        db.onUpgrade(db.getWritableDatabase(), 1, 1);
 
-        for(Notice n : notices){
+        for (Notice n : notices) {
             db.insertNotice(n);
         }
+
+        Collections.reverse(notices);
     }
 }

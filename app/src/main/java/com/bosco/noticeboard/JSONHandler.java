@@ -54,8 +54,9 @@ public class JSONHandler {
                     Integer.parseInt(jsonObject.getString("id")),
                     jsonObject.getString("subject"),
                     jsonObject.getString("content"),
-                    Integer.parseInt(jsonObject.getString("priority")),
                     Integer.parseInt(jsonObject.getString("channel")),
+                    jsonObject.getString("channel_name"),
+                    Integer.parseInt(jsonObject.getString("priority")),
                     jsonObject.getString("expiry")
             );
 

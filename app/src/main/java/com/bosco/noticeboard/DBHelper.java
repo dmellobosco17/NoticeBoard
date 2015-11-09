@@ -18,6 +18,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String CHANNELS_TABLE_NAME = "channels";
 
     private static final String TAG = "DBHelper";
+
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
     }
@@ -27,7 +28,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //Create table notices
         db.execSQL(
                 "create table notices " +
-                        "(id integer, subject text,content text,priority integer, channel integer,DOE text)"
+                        "(id integer, subject text,content text,priority integer, channel integer, channel_name text, DOE text)"
         );
 
         //Create table channels
@@ -46,16 +47,21 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public boolean insertNotice(Notice note) {
+
+        //Since SQLite DB takes '\n' character very seriously we replace it with '</br/>'
+
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("id", note.id);
         contentValues.put("subject", note.subject);
-        contentValues.put("content", note.content);
+        contentValues.put("content", note.content.replace("\n","<br/>"));
         contentValues.put("channel", note.channel);
+        contentValues.put("channel_name", note.channelName);
         contentValues.put("priority", note.priority);
         contentValues.put("DOE", note.DOE);
 
         db.insert("notices", null, contentValues);
+        db.close();
         return true;
     }
 
@@ -64,6 +70,7 @@ public class DBHelper extends SQLiteOpenHelper {
         int numRows = (int) DatabaseUtils.queryNumEntries(db, "notices");
         return numRows;
     }
+
     public int numberOfChannels() {
         SQLiteDatabase db = this.getReadableDatabase();
         int numRows = (int) DatabaseUtils.queryNumEntries(db, "channels");
@@ -93,26 +100,43 @@ public class DBHelper extends SQLiteOpenHelper {
         res.moveToFirst();
 
         while (res.isAfterLast() == false) {
+
             Notice note = new Notice(
                     res.getInt(res.getColumnIndex("id")),
                     res.getString(res.getColumnIndex("subject")),
-                    res.getString(res.getColumnIndex("content")),
+                    res.getString(res.getColumnIndex("content")).replace("<br/>","\n"), //Remember to replace '<br/>' to '\n'
                     res.getInt(res.getColumnIndex("channel")),
+                    res.getString(res.getColumnIndex("channel_name")),
                     res.getInt(res.getColumnIndex("priority")),
                     res.getString(res.getColumnIndex("DOE"))
             );
 
-            Log.d(TAG, "id : "+note.id);
-            Log.d(TAG, "subject : "+note.subject);
-            Log.d(TAG, "content : "+note.content);
-            Log.d(TAG, "DOE : "+note.DOE);
-            Log.d(TAG, "channel : "+note.channel);
-            Log.d(TAG, "priority : "+note.priority);
-
+            Log.d(TAG, note.toString());
 
             array_list.add(note);
             res.moveToNext();
         }
+        res.close();
+        db.close();
         return array_list;
     }
+
+    public Notice getNotice(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("SELECT * FROM notices WHERE id = ?", new String[]{Integer.toString(id)});
+        res.moveToFirst();
+
+        Notice note = new Notice(
+                res.getInt(res.getColumnIndex("id")),
+                res.getString(res.getColumnIndex("subject")),
+                res.getString(res.getColumnIndex("content")).replace("<br/>","\n"), //Remember to replace '<br/>' to '\n'
+                res.getInt(res.getColumnIndex("channel")),
+                res.getString(res.getColumnIndex("channel_name")),
+                res.getInt(res.getColumnIndex("priority")),
+                res.getString(res.getColumnIndex("DOE"))
+        );
+
+        return note;
+    }
+
 }
