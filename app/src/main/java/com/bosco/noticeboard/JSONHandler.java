@@ -68,6 +68,23 @@ public class JSONHandler {
         return n;
     }
 
+    public Channel getChannel(){
+        Channel n = null;
+        try {
+            n = new Channel(
+                    Integer.parseInt(jsonObject.getString("id")),
+                    jsonObject.getString("name"),
+                    jsonObject.getString("description")
+            );
+
+        } catch (JSONException e) {
+            Log.d(TAG+" Exception4",e.getMessage());
+        }
+
+        Log.d(TAG,n.toString());
+        return n;
+    }
+
     public JSONArray getArray(String key){
         JSONArray result = null;
         try {

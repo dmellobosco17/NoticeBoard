@@ -1,5 +1,8 @@
 package com.bosco.noticeboard;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -9,10 +12,7 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Used to call server safely
@@ -34,6 +34,7 @@ public class NetworkHandler extends Thread{
 	protected URL url;
 	protected BufferedReader reader;
 	private final String TAG="NetworkHandler";
+	public static Context context;
 	/**
 	 * @param payload Map<String, String> Object
 	 * @param url URL in string format
@@ -61,8 +62,12 @@ public class NetworkHandler extends Thread{
 	public String callServer()
 	{
 		result="No response";
-		
-		this.start();
+
+		if(NetworkHandler.isConnectingToInternet())
+			this.start();
+		else{
+			return "Internet not available";
+		}
 		try {
 			this.join();
 		} catch (InterruptedException e) {
@@ -104,5 +109,21 @@ public class NetworkHandler extends Thread{
 		finally{
 			
 		}
+	}
+
+	public static boolean isConnectingToInternet(){
+		ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (connectivity != null)
+		{
+			NetworkInfo[] info = connectivity.getAllNetworkInfo();
+			if (info != null)
+				for (int i = 0; i < info.length; i++)
+					if (info[i].getState() == NetworkInfo.State.CONNECTED)
+					{
+						return true;
+					}
+
+		}
+		return false;
 	}
 }

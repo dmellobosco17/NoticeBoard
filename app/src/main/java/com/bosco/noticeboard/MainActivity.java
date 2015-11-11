@@ -1,6 +1,5 @@
 package com.bosco.noticeboard;
 
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -35,7 +34,6 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "MainActivity";
     NoticeAdapter NA;
     RecyclerView RV;
-    private View thisView;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     DBHelper db;
 
@@ -47,6 +45,8 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         db = new DBHelper(this);
+
+        NetworkHandler.context = getApplicationContext();
 
         //TODO add menu items
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -123,20 +123,12 @@ public class MainActivity extends AppCompatActivity
         //TODO handle action buttons
         switch (id) {
             case R.id.action_refresh:
-                //TODO add spinner while refreshing
                 SyncDatabase sync = new SyncDatabase(this);
-                sync.start();
-                try {
-                    sync.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                NA = new NoticeAdapter(sync.notices);
-                RV.setAdapter(NA);
-                RV.refreshDrawableState();
+                sync.execute();
                 break;
             case R.id.action_settings:
-                //TODO add settings
+                Intent i = new Intent(this,SettingsActivity.class);
+                startActivityForResult(i, 1);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -147,7 +139,6 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        //TODO subscribe channels
         if (id == R.id.nav_camara) {
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
@@ -208,5 +199,14 @@ public class MainActivity extends AppCompatActivity
         Intent i = new Intent(this, NoticeActivity.class);
         i.putExtra("Notice", note);
         startActivity(i);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        if(requestCode == 1 && resultCode == 2){
+            SyncDatabase sync = new SyncDatabase(this);
+            sync.execute();
+        }
+        Log.d(TAG,"Request : "+requestCode+" Result : "+resultCode);
     }
 }

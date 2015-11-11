@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/subject"
-                android:layout_toRightOf="@+id/church_photo"
+                android:layout_toRightOf="@id/church_photo"
                 android:layout_alignParentTop="true"
                 android:textSize="30sp"
                 />
@@ -42,8 +42,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/channel"
-                android:layout_toRightOf="@+id/church_photo"
-                android:layout_below="@+id/subject"
+                android:layout_toRightOf="@id/church_photo"
+                android:layout_below="@id/subject"
                 />
 
         </RelativeLayout>

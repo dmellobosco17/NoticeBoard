@@ -65,6 +65,21 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    public boolean insertChannel(Channel ch) {
+
+        //Since SQLite DB takes '\n' character very seriously we replace it with '</br/>'
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("id", ch.id);
+        contentValues.put("name", ch.name);
+        contentValues.put("description", ch.description.replace("\n","<br/>"));
+
+        db.insert("channels", null, contentValues);
+        db.close();
+        return true;
+    }
+
     public int numberOfNotices() {
         SQLiteDatabase db = this.getReadableDatabase();
         int numRows = (int) DatabaseUtils.queryNumEntries(db, "notices");
@@ -114,6 +129,32 @@ public class DBHelper extends SQLiteOpenHelper {
             Log.d(TAG, note.toString());
 
             array_list.add(note);
+            res.moveToNext();
+        }
+        res.close();
+        db.close();
+        return array_list;
+    }
+
+
+    public List<Channel> getAllChannels() {
+        List<Channel> array_list = new ArrayList<Channel>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("select * from channels", null);
+        res.moveToFirst();
+
+        while (res.isAfterLast() == false) {
+
+            Channel ch = new Channel(
+                    res.getInt(res.getColumnIndex("id")),
+                    res.getString(res.getColumnIndex("name")),
+                    res.getString(res.getColumnIndex("description")).replace("<br/>","\n") //Remember to replace '<br/>' to '\n'
+            );
+
+            Log.d(TAG, ch.toString());
+
+            array_list.add(ch);
             res.moveToNext();
         }
         res.close();

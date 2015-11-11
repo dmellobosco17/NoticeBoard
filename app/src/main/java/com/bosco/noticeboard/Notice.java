@@ -10,7 +10,7 @@ public class Notice implements Serializable {
     int id, channel, priority;
     String DOE, channelName;
 
-    //TODO should add channels dynamically from server
+    //TODO add channel images from server
     private int channelImages[] = {
             R.drawable.church_photo,
             R.drawable.church_photo
@@ -26,7 +26,7 @@ public class Notice implements Serializable {
         this.priority = priority;
         this.DOE = DOE;
 
-        channelImage = channelImages[channel - 1];
+        channelImage = channelImages[0];
     }
 
     public String toString() {

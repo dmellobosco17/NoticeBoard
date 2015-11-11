@@ -8,10 +8,19 @@ public class Channel {
     String name,description;
     int id,imageResource;
 
-    Channel(int id, String nm, String desc, int img){
+    Channel(int id, String nm, String desc){
         this.id = id;
         name = nm;
         description = desc;
-        imageResource = img;
     }
+
+    public String toString(){
+        String str = "-----Channel----";
+        str += "\nID : " + id;
+        str += "\nName : " + name;
+        str += "\nDescription : " + description;
+
+        return str;
+    }
+
 }
