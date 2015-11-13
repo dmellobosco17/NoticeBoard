@@ -49,7 +49,9 @@ public class NetworkHandler extends Thread{
             data += URLEncoder.encode("AUTH", "UTF-8") + "=" + URLEncoder.encode(NoticeBoardPreferences.KEY_AUTH, "UTF-8");
 
             Log.d(TAG,data);
-			this.url = new URL(url);
+            Log.d(TAG,url);
+
+            this.url = new URL(url);
 		}catch(Exception e){}
 	}
 	
@@ -63,8 +65,9 @@ public class NetworkHandler extends Thread{
 	{
 		result="No response";
 
-		if(NetworkHandler.isConnectingToInternet())
-			this.start();
+		if(NetworkHandler.isConnectingToInternet()) {
+            this.start();
+        }
 		else{
 			return "Internet not available";
 		}

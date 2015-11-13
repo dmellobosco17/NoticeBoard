@@ -1,14 +1,13 @@
 package com.bosco.noticeboard;
 
-import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
@@ -34,6 +33,7 @@ public class NoticeActivity extends AppCompatActivity {
             window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
         }
 
+        ((ImageView)findViewById(R.id.channel_image)).setImageBitmap(note.getBitmap());
         TextView v = (TextView) findViewById(R.id.channel);
         v.setText(note.channelName);
         v = (TextView) findViewById(R.id.subject);

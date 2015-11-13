@@ -25,6 +25,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -47,7 +48,6 @@ public class RegistrationIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String tkn="null";
         this.intent = intent;
         String result="";
 
@@ -66,7 +66,11 @@ public class RegistrationIntentService extends IntentService {
             // R.string.gcm_defaultSenderId (the Sender ID) is typically derived from google-services.json.
             // See https://developers.google.com/cloud-messaging/android/start for details on this file.
             // [START get_token]
-            InstanceID instanceID = InstanceID.getInstance(this);
+            if(!NetworkHandler.isConnectingToInternet()){
+                Toast.makeText(this,"Please check your internet connection!!!",Toast.LENGTH_LONG).show();
+                return;
+            }
+            InstanceID instanceID = InstanceID.getInstance(this.getApplicationContext());
             String token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             // [END get_token]
@@ -76,12 +80,11 @@ public class RegistrationIntentService extends IntentService {
 
             // Subscribe to topic channels
             subscribeTopics(token);
-            tkn = token;
             // You should store a boolean that indicates whether the generated token has been
             // sent to your server. If the boolean is false, send the token to your server,
             // otherwise your server should have already received the token.
             JSONHandler json = new JSONHandler(result);
-            Log.d(TAG,"JSON : result => "+json.getString("result"));
+            Log.d(TAG, "JSON : result => " + json.getString("result"));
             if(json.getString("result").equals("success")){
                 sharedPreferences.edit().putBoolean(NoticeBoardPreferences.SENT_TOKEN_TO_SERVER, true).apply();
                 sharedPreferences.edit().putString(NoticeBoardPreferences.GCM_TOKEN, token).apply();
@@ -91,6 +94,7 @@ public class RegistrationIntentService extends IntentService {
             // [END register_for_gcm]
         } catch (Exception e) {
             Log.d(TAG, "Failed to complete token refresh", e);
+            Toast.makeText(this,"Failed to register device.", Toast.LENGTH_LONG).show();
             // If an exception happens while fetching the new token or updating our registration data
             // on a third-party server, this ensures that we'll attempt the update at a later time.
             sharedPreferences.edit().putBoolean(NoticeBoardPreferences.SENT_TOKEN_TO_SERVER, false).apply();
@@ -112,6 +116,7 @@ public class RegistrationIntentService extends IntentService {
      * @param token The new token.
      */
     private String sendRegistrationToServer(String token) {
+        //TODO Sync channels from server to mobile after reinstalling app
         // get device IMEI number
         TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         String IMEI = "UNKNOWN";

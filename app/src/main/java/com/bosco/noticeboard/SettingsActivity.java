@@ -4,26 +4,18 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -41,10 +33,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         ListView lv = (ListView)findViewById(R.id.settings);
 
-        DBHelper db = new DBHelper(this);
-        List<Channel> channels = db.getAllChannels();
-
-        ChannelAdapter adapter = new ChannelAdapter(this, R.layout.layout_channel, channels);
+        ChannelAdapter adapter = new ChannelAdapter(this, R.layout.layout_channel, NoticeBoardPreferences.channels);
 
         // Assign adapter to ListView
         lv.setAdapter(adapter);
@@ -88,6 +77,7 @@ class ChannelAdapter extends ArrayAdapter<Channel>{
         View view = inflater.inflate(R.layout.layout_channel, parent, false);
 
         Channel ch = channels.get(position);
+        ((ImageView)view.findViewById(R.id.church_photo)).setImageBitmap(ch.imageBitmap);
         ((TextView)view.findViewById(R.id.name)).setText(ch.name);
         ((TextView)view.findViewById(R.id.description)).setText(ch.description);
         CheckBox cb = (CheckBox) view.findViewById(R.id.checkbox);

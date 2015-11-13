@@ -18,9 +18,11 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String CHANNELS_TABLE_NAME = "channels";
 
     private static final String TAG = "DBHelper";
+    private Context context;
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
+        this.context = context;
     }
 
     @Override
@@ -34,7 +36,12 @@ public class DBHelper extends SQLiteOpenHelper {
         //Create table channels
         db.execSQL(
                 "create table channels " +
-                        "(id integer, name text,description text,image text)"
+                        "(id integer, name text,description text,image text default 'default.jpg')"
+        );
+
+        //Insert Universal channel
+        db.execSQL(
+                "insert into channels (id,name,description) values (0,'Universal','Universal')"
         );
 
     }
@@ -74,6 +81,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("id", ch.id);
         contentValues.put("name", ch.name);
         contentValues.put("description", ch.description.replace("\n","<br/>"));
+        contentValues.put("image", ch.imageName);
 
         db.insert("channels", null, contentValues);
         db.close();
@@ -152,6 +160,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     res.getString(res.getColumnIndex("description")).replace("<br/>","\n") //Remember to replace '<br/>' to '\n'
             );
 
+            ch.setImage(context,res.getString(res.getColumnIndex("image")));
             Log.d(TAG, ch.toString());
 
             array_list.add(ch);

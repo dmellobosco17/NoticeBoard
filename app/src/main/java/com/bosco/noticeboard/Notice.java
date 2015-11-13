@@ -1,5 +1,7 @@
 package com.bosco.noticeboard;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 
 /**
@@ -10,13 +12,6 @@ public class Notice implements Serializable {
     int id, channel, priority;
     String DOE, channelName;
 
-    //TODO add channel images from server
-    private int channelImages[] = {
-            R.drawable.church_photo,
-            R.drawable.church_photo
-    };
-    int channelImage;
-
     Notice(int id, String subject, String content, int channel, String channelName, int priority, String DOE) {
         this.id = id;
         this.subject = subject;
@@ -26,7 +21,15 @@ public class Notice implements Serializable {
         this.priority = priority;
         this.DOE = DOE;
 
-        channelImage = channelImages[0];
+    }
+
+    public Bitmap getBitmap(){
+        for (Channel chan : NoticeBoardPreferences.channels) {
+            if(chan.id == channel) {
+                return chan.imageBitmap;
+            }
+        }
+        return NoticeBoardPreferences.defaultBitmap;
     }
 
     public String toString() {

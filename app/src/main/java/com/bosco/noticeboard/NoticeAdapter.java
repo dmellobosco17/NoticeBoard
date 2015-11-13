@@ -32,7 +32,7 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.NoticeView
     public void onBindViewHolder(NoticeViewHolder holder, int i) {
         holder.subject.setText(notices.get(i).subject);
         holder.channel.setText(notices.get(i).channelName);
-        holder.channelPhoto.setImageResource(notices.get(i).channelImage);
+        holder.channelPhoto.setImageBitmap(notices.get(i).getBitmap());
 
         if (notices.get(i).priority == 2)
             holder.cv.setCardBackgroundColor(holder.cv.getResources().getColor(R.color.icon_important));

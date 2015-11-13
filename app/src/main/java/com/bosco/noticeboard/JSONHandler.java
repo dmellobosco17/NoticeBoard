@@ -1,6 +1,8 @@
 package com.bosco.noticeboard;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,7 +16,7 @@ import org.json.JSONObject;
 public class JSONHandler {
 
     private String jsonString;
-    private JSONObject jsonObject;
+    public JSONObject jsonObject;
     private final String TAG = "JSONHandler";
 
     public JSONHandler(String json){
@@ -53,7 +55,7 @@ public class JSONHandler {
             n = new Notice(
                     Integer.parseInt(jsonObject.getString("id")),
                     jsonObject.getString("subject"),
-                    jsonObject.getString("content"),
+                    jsonObject.getString("content").replace("<br/>","\n"),
                     Integer.parseInt(jsonObject.getString("channel")),
                     jsonObject.getString("channel_name"),
                     Integer.parseInt(jsonObject.getString("priority")),
@@ -68,7 +70,7 @@ public class JSONHandler {
         return n;
     }
 
-    public Channel getChannel(){
+    public Channel getChannel(Context context){
         Channel n = null;
         try {
             n = new Channel(
@@ -76,7 +78,8 @@ public class JSONHandler {
                     jsonObject.getString("name"),
                     jsonObject.getString("description")
             );
-
+            n.imageName = jsonObject.getString("image");
+            n.getAndSetImage(context);
         } catch (JSONException e) {
             Log.d(TAG+" Exception4",e.getMessage());
         }

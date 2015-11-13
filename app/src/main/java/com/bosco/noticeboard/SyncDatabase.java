@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,6 +28,7 @@ public class SyncDatabase extends AsyncTask<String, Void, String> {
     public List<Notice> notices;
     public List<Channel> channels;
     private ProgressDialog pd;
+    SharedPreferences sharedPreferences;
 
     SyncDatabase(Context c) {
         context = c;
@@ -36,6 +38,13 @@ public class SyncDatabase extends AsyncTask<String, Void, String> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        if(!NetworkHandler.isConnectingToInternet()){
+            this.cancel(true);
+            Toast.makeText(context,"Please check your internet connection!!!",Toast.LENGTH_LONG).show();
+            return;
+        }
+
         pd.setMessage("Refreshing");
         pd.setCancelable(false);
         pd.show();
@@ -43,8 +52,8 @@ public class SyncDatabase extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... params) {
+        //TODO make syncDB work even if device is not able to register gor GCM
         Map<String, String> payload = new HashMap<String, String>();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         DBHelper db = new DBHelper(context);
         List<Channel> channels = db.getAllChannels();
         String channelString = "[";
@@ -77,6 +86,10 @@ public class SyncDatabase extends AsyncTask<String, Void, String> {
         Log.d(TAG, result);
 
         JSONHandler json = new JSONHandler(result);
+        if(json.jsonObject == null){
+            Toast.makeText(context,"Server Error!!!",Toast.LENGTH_LONG).show();
+            cancel(true);
+        }
 
         notices = new ArrayList<Notice>();
         channels = new ArrayList<Channel>();
@@ -93,7 +106,7 @@ public class SyncDatabase extends AsyncTask<String, Void, String> {
         JSONArray chans = json.getArray("channels");
         for (int i = 0; i < chans.length(); i++) {
             try {
-                channels.add(new JSONHandler(chans.getString(i)).getChannel());
+                channels.add(new JSONHandler(chans.getString(i)).getChannel(context));
             } catch (JSONException e) {
                 Log.d(TAG, "JSONException > " + chans.toString());
             }
@@ -109,6 +122,7 @@ public class SyncDatabase extends AsyncTask<String, Void, String> {
             db.insertChannel(ch);
         }
 
+        NoticeBoardPreferences.channels = channels;
         Collections.reverse(notices);
         return null;
     }
