@@ -2,6 +2,7 @@ package com.bosco.noticeboard;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -29,9 +30,11 @@ public class SyncDatabase extends AsyncTask<String, Void, String> {
     public List<Channel> channels;
     private ProgressDialog pd;
     SharedPreferences sharedPreferences;
+    private boolean firstRun = false;
 
-    SyncDatabase(Context c) {
+    SyncDatabase(Context c,boolean fr) {
         context = c;
+        firstRun = fr;
         pd = new ProgressDialog(context);
     }
 
@@ -124,12 +127,19 @@ public class SyncDatabase extends AsyncTask<String, Void, String> {
 
         NoticeBoardPreferences.channels = channels;
         Collections.reverse(notices);
+
         return null;
     }
 
     @Override
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
+        if(firstRun){
+            Intent i = new Intent(context,SettingsActivity.class);
+            ((MainActivity)context).startActivityForResult(i, 1);
+            pd.dismiss();
+            return;
+        }
         MainActivity activity = (MainActivity)context;
         activity.NA = new NoticeAdapter(notices);
         activity.RV.setAdapter(activity.NA);

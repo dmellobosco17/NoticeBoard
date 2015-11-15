@@ -24,6 +24,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
@@ -79,6 +80,9 @@ public class MyGcmListenerService extends GcmListenerService {
          *     - Update UI.
          */
 
+        // Notify UI that registration has completed, so the progress indicator can be hidden.
+        Intent registrationComplete = new Intent(NoticeBoardPreferences.NEW_NOTICE_ARRIVED);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
         /**
          * In some cases it may be useful to show a notification indicating to the user
          * that a message was received.
@@ -94,8 +98,9 @@ public class MyGcmListenerService extends GcmListenerService {
      * @param note Notice received from server.
      */
     private void sendNotification(Notice note) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, NoticeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("Notice", note);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 

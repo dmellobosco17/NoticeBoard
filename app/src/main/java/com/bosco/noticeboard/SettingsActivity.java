@@ -67,6 +67,11 @@ class ChannelAdapter extends ArrayAdapter<Channel>{
     public ChannelAdapter(Context c, int resourceID, List<Channel> channels){
         super(c, resourceID, channels);
         this.channels = channels;
+
+        //Do not show universal channel
+        if(channels.get(0).id == 0)
+            channels.remove(0);
+
         this.context = c;
         preferences = PreferenceManager.getDefaultSharedPreferences(c);
     }

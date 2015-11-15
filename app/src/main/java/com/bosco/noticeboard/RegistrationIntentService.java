@@ -50,6 +50,7 @@ public class RegistrationIntentService extends IntentService {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         this.intent = intent;
         String result="";
+        String token="";
 
         Log.d(TAG,""+sharedPreferences.getBoolean(NoticeBoardPreferences.SENT_TOKEN_TO_SERVER, false));
         //Return if already have token
@@ -71,18 +72,16 @@ public class RegistrationIntentService extends IntentService {
                 return;
             }
             InstanceID instanceID = InstanceID.getInstance(this.getApplicationContext());
-            String token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
+            token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             // [END get_token]
             Log.i(TAG, "GCM Registration Token: " + token);
 
-            result = sendRegistrationToServer(token);
-
-            // Subscribe to topic channels
-            subscribeTopics(token);
             // You should store a boolean that indicates whether the generated token has been
             // sent to your server. If the boolean is false, send the token to your server,
             // otherwise your server should have already received the token.
+            result = sendRegistrationToServer(token);
+
             JSONHandler json = new JSONHandler(result);
             Log.d(TAG, "JSON : result => " + json.getString("result"));
             if(json.getString("result").equals("success")){
@@ -99,6 +98,7 @@ public class RegistrationIntentService extends IntentService {
             // on a third-party server, this ensures that we'll attempt the update at a later time.
             sharedPreferences.edit().putBoolean(NoticeBoardPreferences.SENT_TOKEN_TO_SERVER, false).apply();
         }
+
         // Notify UI that registration has completed, so the progress indicator can be hidden.
         Intent registrationComplete = new Intent(NoticeBoardPreferences.REGISTRATION_COMPLETE);
         Bundle data=new Bundle();

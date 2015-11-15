@@ -35,7 +35,9 @@ public class MainActivity extends AppCompatActivity
     NoticeAdapter NA;
     RecyclerView RV;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
+    private BroadcastReceiver newNoticeBroadcastReceiver;
     DBHelper db;
+    List<Notice> notices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity
         db = new DBHelper(this);
         NoticeBoardPreferences.initResources(this);
 
+        notices = new ArrayList<Notice>();
         NetworkHandler.context = getApplicationContext();
 
         //TODO add menu items
@@ -77,6 +80,21 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
+        final LinearLayoutManager llm = new LinearLayoutManager(this.getBaseContext());
+        newNoticeBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                notices = db.getAllNotices();
+                NA = new NoticeAdapter(notices);
+                RV = (RecyclerView) findViewById(R.id.notice_list);
+                RV.setLayoutManager(llm);
+
+                RV.setAdapter(NA);
+                RV.setVisibility(View.VISIBLE);
+                Log.d(TAG,"New Notice Arrived!!!");
+            }
+        };
+
         if (checkPlayServices()) {
             // Start IntentService to register this application with GCM.
             Intent intent = new Intent(this, RegistrationIntentService.class);
@@ -84,16 +102,21 @@ public class MainActivity extends AppCompatActivity
             Log.d(TAG, "Register");
         }
 
-        List<Notice> notices = new ArrayList<Notice>();
         notices = db.getAllNotices();
 
         NA = new NoticeAdapter(notices);
         RV = (RecyclerView) findViewById(R.id.notice_list);
-        LinearLayoutManager llm = new LinearLayoutManager(this.getBaseContext());
         RV.setLayoutManager(llm);
 
         RV.setAdapter(NA);
         RV.setVisibility(View.VISIBLE);
+
+        //If it's the first time app is starting then we must refresh the db
+        if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("firstRun",true)){
+            SyncDatabase sync = new SyncDatabase(this,true);
+            sync.execute();
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("firstRun",false).apply();
+        }
 
     }
 
@@ -124,7 +147,7 @@ public class MainActivity extends AppCompatActivity
         //TODO handle action buttons
         switch (id) {
             case R.id.action_refresh:
-                SyncDatabase sync = new SyncDatabase(this);
+                SyncDatabase sync = new SyncDatabase(this,false);
                 sync.execute();
                 break;
             case R.id.action_settings:
@@ -164,12 +187,16 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(NoticeBoardPreferences.REGISTRATION_COMPLETE));
+        LocalBroadcastManager.getInstance(this).registerReceiver(newNoticeBroadcastReceiver,
+                new IntentFilter(NoticeBoardPreferences.NEW_NOTICE_ARRIVED));
         Log.d(TAG, "Resume");
     }
 
     @Override
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(newNoticeBroadcastReceiver);
         super.onPause();
         Log.d(TAG, "Pause");
         db.close();
@@ -205,7 +232,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         if(requestCode == 1 && resultCode == 2){
-            SyncDatabase sync = new SyncDatabase(this);
+            SyncDatabase sync = new SyncDatabase(this,false);
             sync.execute();
         }
         Log.d(TAG,"Request : "+requestCode+" Result : "+resultCode);

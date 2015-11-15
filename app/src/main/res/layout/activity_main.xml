@@ -35,6 +35,5 @@
             android:layout_height="wrap_content"
             />
 
-
     </LinearLayout>
 </android.support.v4.widget.DrawerLayout>
