@@ -45,7 +45,7 @@ public class MyGcmListenerService extends GcmListenerService {
     public void onMessageReceived(String from, Bundle data) {
         String id = data.getString("id");
         String subject = data.getString("subject");
-        String content = data.getString("content");
+        String content = data.getString("content").replace("<br/>","\n");
         String priority = data.getString("priority");
         String channel = data.getString("channel");
         String channelName = data.getString("channel_name");
@@ -64,8 +64,6 @@ public class MyGcmListenerService extends GcmListenerService {
         db.insertNotice(note);
         db.close();
 
-        //TODO update UI when GCM arrives
-        //MainActivity.NA.notifyDataSetChanged();
         if (from.startsWith("/topics/")) {
             // message received from some topic.
         } else {

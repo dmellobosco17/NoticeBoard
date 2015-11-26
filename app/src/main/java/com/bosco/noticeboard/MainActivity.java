@@ -112,12 +112,14 @@ public class MainActivity extends AppCompatActivity
         RV.setVisibility(View.VISIBLE);
 
         //If it's the first time app is starting then we must refresh the db
-        if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("firstRun",true)){
+        if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("firstRun",true) || db.numberOfChannels() <= 1){
             SyncDatabase sync = new SyncDatabase(this,true);
             sync.execute();
             PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("firstRun",false).apply();
+        }else {
+            SyncChannels syncChannels = new SyncChannels(this,true);
+            syncChannels.execute();
         }
-
     }
 
     @Override
@@ -194,10 +196,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onPause() {
+        super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-        super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(newNoticeBroadcastReceiver);
-        super.onPause();
         Log.d(TAG, "Pause");
         db.close();
     }

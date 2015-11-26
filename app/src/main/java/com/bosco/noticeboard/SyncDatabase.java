@@ -42,11 +42,6 @@ public class SyncDatabase extends AsyncTask<String, Void, String> {
     protected void onPreExecute() {
         super.onPreExecute();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        if(!NetworkHandler.isConnectingToInternet()){
-            this.cancel(true);
-            Toast.makeText(context,"Please check your internet connection!!!",Toast.LENGTH_LONG).show();
-            return;
-        }
 
         pd.setMessage("Refreshing");
         pd.setCancelable(false);
@@ -86,6 +81,10 @@ public class SyncDatabase extends AsyncTask<String, Void, String> {
 
         NetworkHandler nh = new NetworkHandler(payload, url);
         String result = nh.callServer();
+        if(result.equals("No response")){
+            pd.dismiss();
+            this.cancel(true);
+        }
         Log.d(TAG, result);
 
         JSONHandler json = new JSONHandler(result);
@@ -109,7 +108,7 @@ public class SyncDatabase extends AsyncTask<String, Void, String> {
         JSONArray chans = json.getArray("channels");
         for (int i = 0; i < chans.length(); i++) {
             try {
-                channels.add(new JSONHandler(chans.getString(i)).getChannel(context));
+                channels.add(new JSONHandler(chans.getString(i)).getChannel());
             } catch (JSONException e) {
                 Log.d(TAG, "JSONException > " + chans.toString());
             }
@@ -122,6 +121,9 @@ public class SyncDatabase extends AsyncTask<String, Void, String> {
         }
 
         for (Channel ch : channels) {
+            if(firstRun){
+                ch.getAndSetImage(context);
+            }
             db.insertChannel(ch);
         }
 
@@ -134,6 +136,7 @@ public class SyncDatabase extends AsyncTask<String, Void, String> {
     @Override
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
+        NoticeBoardPreferences.initResources(context);
         if(firstRun){
             Intent i = new Intent(context,SettingsActivity.class);
             ((MainActivity)context).startActivityForResult(i, 1);

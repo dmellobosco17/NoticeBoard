@@ -18,17 +18,20 @@ public class NoticeBoardPreferences {
     public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
     public static final String REGISTRATION_COMPLETE = "registrationComplete";
     public static final String NEW_NOTICE_ARRIVED = "newNoticeArrived";
+    public static final String UPDATE_UI = "updateUI";
     public static final String GCM_TOKEN = "GcmToken";
 
     //PHP keys
     public static final String KEY_TOKEN = "token";
     public static final String KEY_IMEI = "IMEI";
+    public static final String KEY_DEVICE = "DEVICE";
 
     //Server URLs
     public static final String HOST = "http://dmellobosco17.esy.es";
     //public static final String HOST = "http://192.168.0.100";
     public static final String URL_REGISTER_TOKEN = HOST+"/NoticeBoard/main/index.php?opt=register_token";
     public static final String URL_SYNC_DB = HOST+"/NoticeBoard/main/index.php?opt=sync_db";
+    public static final String URL_SYNC_CHANNELS = HOST+"/NoticeBoard/main/index.php?opt=sync_channels";
     public static final String URL_IMAGES = HOST+"/NoticeBoard/channel_imgs/";
 
     //API keys

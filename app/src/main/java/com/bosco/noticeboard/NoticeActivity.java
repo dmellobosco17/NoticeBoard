@@ -33,7 +33,12 @@ public class NoticeActivity extends AppCompatActivity {
             window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
         }
 
-        ((ImageView)findViewById(R.id.channel_image)).setImageBitmap(note.getBitmap());
+        try {
+            ((ImageView) findViewById(R.id.channel_image)).setImageBitmap(note.getBitmap());
+        }catch(NullPointerException e){
+            NoticeBoardPreferences.initResources(this);
+            ((ImageView) findViewById(R.id.channel_image)).setImageBitmap(note.getBitmap());
+        }
         TextView v = (TextView) findViewById(R.id.channel);
         v.setText(note.channelName);
         v = (TextView) findViewById(R.id.subject);

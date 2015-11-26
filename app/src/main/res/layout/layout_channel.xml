@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@id/church_photo"
-        android:textSize="30sp"
+        android:textSize="20sp"
         android:paddingRight="60dp"
         />
 
@@ -32,6 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/name"
         android:layout_toRightOf="@id/church_photo"
+        android:textSize="15sp"
         />
     <CheckBox
         android:id="@+id/checkbox"

@@ -20,6 +20,7 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -30,6 +31,8 @@ import android.widget.Toast;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -68,14 +71,14 @@ public class RegistrationIntentService extends IntentService {
             // See https://developers.google.com/cloud-messaging/android/start for details on this file.
             // [START get_token]
             if(!NetworkHandler.isConnectingToInternet()){
-                Toast.makeText(this,"Please check your internet connection!!!",Toast.LENGTH_LONG).show();
+                Thread.sleep(1500);
                 return;
             }
             InstanceID instanceID = InstanceID.getInstance(this.getApplicationContext());
             token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             // [END get_token]
-            Log.i(TAG, "GCM Registration Token: " + token);
+            Log.d(TAG, "GCM Registration Token: " + token);
 
             // You should store a boolean that indicates whether the generated token has been
             // sent to your server. If the boolean is false, send the token to your server,
@@ -120,35 +123,30 @@ public class RegistrationIntentService extends IntentService {
         // get device IMEI number
         TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         String IMEI = "UNKNOWN";
+        String deviceInfo = "UNKNOWN";
         try {
             IMEI = mngr.getDeviceId();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("SDK", Build.VERSION.SDK_INT);
+            jsonObject.put("RELEASE", Build.VERSION.RELEASE);
+            jsonObject.put("MODEL", android.os.Build.MODEL);
+            jsonObject.put("BRAND", Build.BRAND);
+            jsonObject.put("MANUFACTURER", Build.MANUFACTURER);
+            Log.d(TAG,"DEVICE : "+jsonObject.toString());
+            deviceInfo = jsonObject.toString();
         }catch(Exception e){
-            Log.d(TAG,"Unable to get IMEI");
+            Log.d(TAG,"Unable to device info");
         }
 
         String url = NoticeBoardPreferences.URL_REGISTER_TOKEN;
         Map<String,String> payload = new HashMap<String,String>();
         payload.put(NoticeBoardPreferences.KEY_TOKEN, token);
         payload.put(NoticeBoardPreferences.KEY_IMEI, IMEI);
+        payload.put(NoticeBoardPreferences.KEY_DEVICE, deviceInfo);
 
         NetworkHandler nh = new NetworkHandler(payload, url);
         return nh.callServer();
 
     }
-
-    /**
-     * Subscribe to any GCM topics of interest, as defined by the TOPICS constant.
-     *
-     * @param token GCM token
-     * @throws IOException if unable to reach the GCM PubSub service
-     */
-    // [START subscribe_topics]
-    private void subscribeTopics(String token) throws IOException {
-        GcmPubSub pubSub = GcmPubSub.getInstance(this);
-        for (String topic : TOPICS) {
-            pubSub.subscribe(token, "/topics/" + topic, null);
-        }
-    }
-    // [END subscribe_topics]
 
 }

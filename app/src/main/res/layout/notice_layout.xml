@@ -36,7 +36,7 @@
                 android:id="@+id/subject"
                 android:layout_toRightOf="@id/church_photo"
                 android:layout_alignParentTop="true"
-                android:textSize="30sp"
+                android:textSize="20sp"
                 />
 
             <TextView

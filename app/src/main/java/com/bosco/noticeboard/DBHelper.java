@@ -97,6 +97,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public int numberOfChannels() {
         SQLiteDatabase db = this.getReadableDatabase();
         int numRows = (int) DatabaseUtils.queryNumEntries(db, "channels");
+        Log.d(TAG,"Number of channels : "+numRows);
         return numRows;
     }
 
@@ -157,7 +158,7 @@ public class DBHelper extends SQLiteOpenHelper {
             Channel ch = new Channel(
                     res.getInt(res.getColumnIndex("id")),
                     res.getString(res.getColumnIndex("name")),
-                    res.getString(res.getColumnIndex("description")).replace("<br/>","\n") //Remember to replace '<br/>' to '\n'
+                    res.getString(res.getColumnIndex("description")).replace("<br/>", "\n") //Remember to replace '<br/>' to '\n'
             );
 
             ch.setImage(context,res.getString(res.getColumnIndex("image")));
@@ -189,4 +190,8 @@ public class DBHelper extends SQLiteOpenHelper {
         return note;
     }
 
+    public void emptyChannels(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from channels");
+    }
 }

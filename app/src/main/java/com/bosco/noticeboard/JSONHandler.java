@@ -8,6 +8,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+
 /**
  * Created by Bosco on 11/5/2015.
  *
@@ -70,7 +72,7 @@ public class JSONHandler {
         return n;
     }
 
-    public Channel getChannel(Context context){
+    public Channel getChannel(){
         Channel n = null;
         try {
             n = new Channel(
@@ -79,7 +81,7 @@ public class JSONHandler {
                     jsonObject.getString("description")
             );
             n.imageName = jsonObject.getString("image");
-            n.getAndSetImage(context);
+            //n.getAndSetImage(context);                    //Fetch channel image while opening settingsActivity
         } catch (JSONException e) {
             Log.d(TAG+" Exception4",e.getMessage());
         }
